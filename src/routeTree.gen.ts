@@ -13,8 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as BookingRouteImport } from './routes/booking'
 import { Route as BookingsRouteImport } from './routes/bookings'
 import { Route as ConfirmationRouteImport } from './routes/confirmation'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as PaymentRouteImport } from './routes/payment'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as FlightFlightIdRouteImport } from './routes/flight.$flightId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -37,6 +41,21 @@ const ConfirmationRoute = ConfirmationRouteImport.update({
   path: '/confirmation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PaymentRoute = PaymentRouteImport.update({
   id: '/payment',
   path: '/payment',
@@ -45,6 +64,11 @@ const PaymentRoute = PaymentRouteImport.update({
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FlightFlightIdRoute = FlightFlightIdRouteImport.update({
@@ -58,8 +82,12 @@ export interface FileRoutesByFullPath {
   '/booking': typeof BookingRoute
   '/bookings': typeof BookingsRoute
   '/confirmation': typeof ConfirmationRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/help': typeof HelpRoute
+  '/login': typeof LoginRoute
   '/payment': typeof PaymentRoute
   '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
   '/flight/$flightId': typeof FlightFlightIdRoute
 }
 export interface FileRoutesByTo {
@@ -67,8 +95,12 @@ export interface FileRoutesByTo {
   '/booking': typeof BookingRoute
   '/bookings': typeof BookingsRoute
   '/confirmation': typeof ConfirmationRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/help': typeof HelpRoute
+  '/login': typeof LoginRoute
   '/payment': typeof PaymentRoute
   '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
   '/flight/$flightId': typeof FlightFlightIdRoute
 }
 export interface FileRoutesById {
@@ -77,8 +109,12 @@ export interface FileRoutesById {
   '/booking': typeof BookingRoute
   '/bookings': typeof BookingsRoute
   '/confirmation': typeof ConfirmationRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/help': typeof HelpRoute
+  '/login': typeof LoginRoute
   '/payment': typeof PaymentRoute
   '/search': typeof SearchRoute
+  '/signup': typeof SignupRoute
   '/flight/$flightId': typeof FlightFlightIdRoute
 }
 export interface FileRouteTypes {
@@ -88,8 +124,12 @@ export interface FileRouteTypes {
     | '/booking'
     | '/bookings'
     | '/confirmation'
+    | '/forgot-password'
+    | '/help'
+    | '/login'
     | '/payment'
     | '/search'
+    | '/signup'
     | '/flight/$flightId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -97,8 +137,12 @@ export interface FileRouteTypes {
     | '/booking'
     | '/bookings'
     | '/confirmation'
+    | '/forgot-password'
+    | '/help'
+    | '/login'
     | '/payment'
     | '/search'
+    | '/signup'
     | '/flight/$flightId'
   id:
     | '__root__'
@@ -106,8 +150,12 @@ export interface FileRouteTypes {
     | '/booking'
     | '/bookings'
     | '/confirmation'
+    | '/forgot-password'
+    | '/help'
+    | '/login'
     | '/payment'
     | '/search'
+    | '/signup'
     | '/flight/$flightId'
   fileRoutesById: FileRoutesById
 }
@@ -116,8 +164,12 @@ export interface RootRouteChildren {
   BookingRoute: typeof BookingRoute
   BookingsRoute: typeof BookingsRoute
   ConfirmationRoute: typeof ConfirmationRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  HelpRoute: typeof HelpRoute
+  LoginRoute: typeof LoginRoute
   PaymentRoute: typeof PaymentRoute
   SearchRoute: typeof SearchRoute
+  SignupRoute: typeof SignupRoute
   FlightFlightIdRoute: typeof FlightFlightIdRoute
 }
 
@@ -151,6 +203,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfirmationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/payment': {
       id: '/payment'
       path: '/payment'
@@ -163,6 +236,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/flight/$flightId': {
@@ -180,8 +260,12 @@ const rootRouteChildren: RootRouteChildren = {
   BookingRoute: BookingRoute,
   BookingsRoute: BookingsRoute,
   ConfirmationRoute: ConfirmationRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  HelpRoute: HelpRoute,
+  LoginRoute: LoginRoute,
   PaymentRoute: PaymentRoute,
   SearchRoute: SearchRoute,
+  SignupRoute: SignupRoute,
   FlightFlightIdRoute: FlightFlightIdRoute,
 }
 export const routeTree = rootRouteImport
