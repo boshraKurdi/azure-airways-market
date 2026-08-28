@@ -76,6 +76,7 @@ function Home() {
             <Link
               key={r.pair}
               to="/search"
+              search={{}}
               className="group inline-flex shrink-0 items-center gap-2.5 rounded-full border border-hairline bg-surface px-4 py-2 text-xs font-semibold text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40"
             >
               <span className="tabular">{r.pair}</span>
@@ -93,6 +94,7 @@ function Home() {
           action={
             <Link
               to="/search"
+              search={{}}
               className="hidden shrink-0 items-center gap-1.5 rounded-lg border border-hairline bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-accent/40 hover:text-accent sm:inline-flex"
             >
               All offers <ArrowRight className="h-4 w-4" />
@@ -155,6 +157,7 @@ function Home() {
             </Link>
             <Link
               to="/search"
+              search={{}}
               className="rounded-lg border border-primary-foreground/25 px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/10"
             >
               Browse offers

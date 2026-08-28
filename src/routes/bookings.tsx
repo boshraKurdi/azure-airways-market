@@ -126,6 +126,7 @@ function BookingsPage() {
               action={
                 <Link
                   to="/search"
+              search={{}}
                   className="rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground"
                 >
                   Find a flight

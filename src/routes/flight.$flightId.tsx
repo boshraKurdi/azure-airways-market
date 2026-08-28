@@ -55,6 +55,7 @@ function FlightDetails() {
       <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
         <Link
           to="/search"
+              search={{}}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-accent"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to results

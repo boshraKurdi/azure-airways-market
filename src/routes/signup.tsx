@@ -51,6 +51,7 @@ function SignupPage() {
       </label>
       <Link
         to="/search"
+              search={{}}
         className="flex w-full items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90"
       >
         Create account
