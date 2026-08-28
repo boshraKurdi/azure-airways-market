@@ -9,12 +9,18 @@ import { airlines, flights, formatPrice } from "@/lib/flight-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/search")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    from: (search.from as string) || "",
-    to: (search.to as string) || "",
-    depart: (search.depart as string) || "",
+  validateSearch: (search: {
+    from?: string;
+    to?: string;
+    depart?: string;
+    passengers?: number;
+    cabin?: string;
+  }) => ({
+    from: search.from ?? "",
+    to: search.to ?? "",
+    depart: search.depart ?? "",
     passengers: Number(search.passengers ?? 1),
-    cabin: (search.cabin as string) || "Economy",
+    cabin: search.cabin ?? "Economy",
   }),
   head: () => ({
     meta: [

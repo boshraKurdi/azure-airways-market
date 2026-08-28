@@ -25,7 +25,7 @@ export const Route = createFileRoute("/confirmation")({
 });
 
 function ConfirmationPage() {
-  const flight = flights[0];
+  const flight = flights[0]!;
   const total = Math.round(flight.price * 1.12) + 9;
 
   return (

@@ -38,7 +38,7 @@ const methods = [
 ] as const;
 
 function PaymentPage() {
-  const flight = flights[0];
+  const flight = flights[0]!;
   const [method, setMethod] = useState<string>("sham");
 
   return (

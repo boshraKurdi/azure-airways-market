@@ -27,7 +27,7 @@ export const Route = createFileRoute("/booking")({
 });
 
 function BookingPage() {
-  const flight = flights[0];
+  const flight = flights[0]!;
   const [count, setCount] = useState(1);
 
   return (
