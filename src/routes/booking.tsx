@@ -14,7 +14,8 @@ export const Route = createFileRoute("/booking")({
       { title: "Passenger details — step 2 of 4 | Skyla" },
       {
         name: "description",
-        content: "Enter passenger and contact details for your Skyla flight booking. Secure, encrypted and quick.",
+        content:
+          "Enter passenger and contact details for your Skyla flight booking. Secure, encrypted and quick.",
       },
       { property: "og:title", content: "Passenger details — step 2 of 4 | Skyla" },
       {
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/booking")({
 });
 
 function BookingPage() {
-  const flight = flights[0];
+  const flight = flights[0]!;
   const [count, setCount] = useState(1);
 
   return (

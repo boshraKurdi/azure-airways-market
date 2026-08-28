@@ -16,8 +16,7 @@ export function RouteVisual({
   size?: "sm" | "md" | "lg";
   className?: string;
 }) {
-  const codeSize =
-    size === "lg" ? "text-4xl sm:text-5xl" : size === "md" ? "text-2xl" : "text-lg";
+  const codeSize = size === "lg" ? "text-4xl sm:text-5xl" : size === "md" ? "text-2xl" : "text-lg";
 
   return (
     <div className={cn("flex items-center gap-3 sm:gap-4", className)}>
@@ -36,10 +35,7 @@ export function RouteVisual({
           {typeof stops === "number" && stops > 0 && (
             <span className="absolute left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-warning ring-3 ring-surface" />
           )}
-          <Plane
-            className="h-3.5 w-3.5 shrink-0 -rotate-45 text-accent"
-            strokeWidth={2.4}
-          />
+          <Plane className="h-3.5 w-3.5 shrink-0 -rotate-45 text-accent" strokeWidth={2.4} />
         </div>
         {typeof stops === "number" && (
           <span className="mt-1 text-[11px] font-medium text-muted-foreground">

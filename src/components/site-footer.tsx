@@ -29,8 +29,8 @@ export function SiteFooter() {
               <span className="text-display text-lg font-semibold text-ink">Skyla</span>
             </div>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              A curated flight marketplace. Verified offers, transparent pricing, and a booking
-              flow that respects your time.
+              A curated flight marketplace. Verified offers, transparent pricing, and a booking flow
+              that respects your time.
             </p>
           </div>
           {groups.map((g) => (

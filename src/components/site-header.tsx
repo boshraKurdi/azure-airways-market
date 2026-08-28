@@ -36,7 +36,9 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
           <span
             className={cn(
               "grid h-9 w-9 shrink-0 place-items-center rounded-lg transition-colors",
-              solid ? "bg-primary text-primary-foreground" : "bg-primary-foreground/12 text-primary-foreground",
+              solid
+                ? "bg-primary text-primary-foreground"
+                : "bg-primary-foreground/12 text-primary-foreground",
             )}
           >
             <Plane className="h-4.5 w-4.5 -rotate-45" strokeWidth={2.2} />
@@ -102,7 +104,9 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
             aria-label="Menu"
             className={cn(
               "grid h-9 w-9 shrink-0 place-items-center rounded-lg lg:hidden",
-              solid ? "text-ink hover:bg-surface-muted" : "text-primary-foreground hover:bg-primary-foreground/10",
+              solid
+                ? "text-ink hover:bg-surface-muted"
+                : "text-primary-foreground hover:bg-primary-foreground/10",
             )}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

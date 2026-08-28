@@ -55,6 +55,7 @@ export function AuthLayout({
             </p>
             <Link
               to="/search"
+              search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
               className="mt-6 inline-block text-xs font-semibold text-primary-foreground/80 underline-offset-4 hover:underline"
             >
               Browse offers instead →

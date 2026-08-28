@@ -26,9 +26,21 @@ export const Route = createFileRoute("/")({
 });
 
 const trustPoints = [
-  { icon: TrendingDown, title: "Price-verified offers", body: "Every fare is re-checked before it reaches you — no bait pricing." },
-  { icon: TicketPercent, title: "Curated, not scraped", body: "Our team negotiates and publishes each offer manually." },
-  { icon: BellRing, title: "Drop alerts", body: "We watch your route and tell you the moment the fare moves." },
+  {
+    icon: TrendingDown,
+    title: "Price-verified offers",
+    body: "Every fare is re-checked before it reaches you — no bait pricing.",
+  },
+  {
+    icon: TicketPercent,
+    title: "Curated, not scraped",
+    body: "Our team negotiates and publishes each offer manually.",
+  },
+  {
+    icon: BellRing,
+    title: "Drop alerts",
+    body: "We watch your route and tell you the moment the fare moves.",
+  },
 ];
 
 const routesStrip = [
@@ -76,6 +88,7 @@ function Home() {
             <Link
               key={r.pair}
               to="/search"
+              search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
               className="group inline-flex shrink-0 items-center gap-2.5 rounded-full border border-hairline bg-surface px-4 py-2 text-xs font-semibold text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40"
             >
               <span className="tabular">{r.pair}</span>
@@ -93,6 +106,7 @@ function Home() {
           action={
             <Link
               to="/search"
+              search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
               className="hidden shrink-0 items-center gap-1.5 rounded-lg border border-hairline bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-accent/40 hover:text-accent sm:inline-flex"
             >
               All offers <ArrowRight className="h-4 w-4" />
@@ -155,6 +169,7 @@ function Home() {
             </Link>
             <Link
               to="/search"
+              search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
               className="rounded-lg border border-primary-foreground/25 px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/10"
             >
               Browse offers

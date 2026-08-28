@@ -8,7 +8,8 @@ export const Route = createFileRoute("/forgot-password")({
       { title: "Reset your Skyla password" },
       {
         name: "description",
-        content: "Enter your email and we will send a secure link to reset your Skyla account password.",
+        content:
+          "Enter your email and we will send a secure link to reset your Skyla account password.",
       },
       { property: "og:title", content: "Reset your Skyla password" },
       { property: "og:description", content: "Get a secure password reset link by email." },

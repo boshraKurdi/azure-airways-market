@@ -9,12 +9,18 @@ import { airlines, flights, formatPrice } from "@/lib/flight-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/search")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    from: (search.from as string) || "",
-    to: (search.to as string) || "",
-    depart: (search.depart as string) || "",
+  validateSearch: (search: {
+    from?: string;
+    to?: string;
+    depart?: string;
+    passengers?: number;
+    cabin?: string;
+  }) => ({
+    from: search.from ?? "",
+    to: search.to ?? "",
+    depart: search.depart ?? "",
     passengers: Number(search.passengers ?? 1),
-    cabin: (search.cabin as string) || "Economy",
+    cabin: search.cabin ?? "Economy",
   }),
   head: () => ({
     meta: [
@@ -41,7 +47,9 @@ function SearchPage() {
   const [maxPrice, setMaxPrice] = useState(1200);
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
   const [stops, setStops] = useState<"any" | "0" | "1">("any");
-  const [departWindow, setDepartWindow] = useState<"any" | "morning" | "afternoon" | "night">("any");
+  const [departWindow, setDepartWindow] = useState<"any" | "morning" | "afternoon" | "night">(
+    "any",
+  );
   const [sort, setSort] = useState<Sort>("cheapest");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -102,7 +110,10 @@ function SearchPage() {
         <p className="eyebrow">Airlines</p>
         <div className="mt-3 space-y-2.5">
           {airlines.map((a) => (
-            <label key={a} className="flex cursor-pointer items-center gap-2.5 text-sm text-ink-soft">
+            <label
+              key={a}
+              className="flex cursor-pointer items-center gap-2.5 text-sm text-ink-soft"
+            >
               <input
                 type="checkbox"
                 checked={selectedAirlines.includes(a)}

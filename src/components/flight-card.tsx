@@ -17,7 +17,11 @@ export function OfferCard({ flight }: { flight: Flight }) {
             <p className="text-xs text-muted-foreground">{flight.flightNumber}</p>
           </div>
         </div>
-        {flight.tag && <StatusBadge tone={flight.tag === "Almost gone" ? "warning" : "accent"}>{flight.tag}</StatusBadge>}
+        {flight.tag && (
+          <StatusBadge tone={flight.tag === "Almost gone" ? "warning" : "accent"}>
+            {flight.tag}
+          </StatusBadge>
+        )}
       </div>
 
       <RouteVisual
@@ -132,7 +136,8 @@ export function ResultRow({ flight }: { flight: Flight }) {
           <div className="lg:text-right">
             <Price value={flight.price} currency={flight.currency} suffix="per passenger" />
             <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-success">
-              <ShieldCheck className="h-3.5 w-3.5" /> Price verified {flight.verifiedMinutesAgo}m ago
+              <ShieldCheck className="h-3.5 w-3.5" /> Price verified {flight.verifiedMinutesAgo}m
+              ago
             </p>
           </div>
           <Link

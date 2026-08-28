@@ -8,10 +8,14 @@ export const Route = createFileRoute("/signup")({
       { title: "Create your free Skyla account" },
       {
         name: "description",
-        content: "Create a Skyla account to save routes, receive fare-drop alerts and book curated flight offers.",
+        content:
+          "Create a Skyla account to save routes, receive fare-drop alerts and book curated flight offers.",
       },
       { property: "og:title", content: "Create your free Skyla account" },
-      { property: "og:description", content: "Save routes, get fare alerts and book curated offers." },
+      {
+        property: "og:description",
+        content: "Save routes, get fare alerts and book curated offers.",
+      },
     ],
   }),
   component: SignupPage,
@@ -46,11 +50,12 @@ function SignupPage() {
         <input type="password" className={inputClass} placeholder="••••••••" />
       </Field>
       <label className="flex cursor-pointer items-start gap-2.5 text-xs leading-relaxed text-ink-soft">
-        <input type="checkbox" className="mt-0.5 h-4 w-4 rounded border-input accent-accent" />
-        I agree to the Skyla terms of service and privacy policy.
+        <input type="checkbox" className="mt-0.5 h-4 w-4 rounded border-input accent-accent" />I
+        agree to the Skyla terms of service and privacy policy.
       </label>
       <Link
         to="/search"
+        search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
         className="flex w-full items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90"
       >
         Create account

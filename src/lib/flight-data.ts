@@ -242,7 +242,7 @@ export const flights: Flight[] = [
   },
 ];
 
-export const getFlight = (id: string) => flights.find((f) => f.id === id) ?? flights[0];
+export const getFlight = (id: string) => flights.find((f) => f.id === id) ?? flights[0]!;
 
 export type BookingStatus = "upcoming" | "completed" | "cancelled";
 

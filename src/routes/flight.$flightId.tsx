@@ -55,6 +55,7 @@ function FlightDetails() {
       <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
         <Link
           to="/search"
+          search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-accent"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to results
@@ -162,7 +163,12 @@ function FlightDetails() {
 
           <div>
             <div className="lg:sticky lg:top-24">
-              <BookingSummary flight={flight} passengers={1} cta="Continue to Booking" ctaTo="/booking" />
+              <BookingSummary
+                flight={flight}
+                passengers={1}
+                cta="Continue to Booking"
+                ctaTo="/booking"
+              />
             </div>
           </div>
         </div>
