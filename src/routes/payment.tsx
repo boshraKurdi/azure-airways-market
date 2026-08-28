@@ -14,7 +14,8 @@ export const Route = createFileRoute("/payment")({
       { title: "Secure payment — step 3 of 4 | Skyla" },
       {
         name: "description",
-        content: "Choose Sham Cash, card or wallet and complete your Skyla flight payment securely.",
+        content:
+          "Choose Sham Cash, card or wallet and complete your Skyla flight payment securely.",
       },
       { property: "og:title", content: "Secure payment — step 3 of 4 | Skyla" },
       {
@@ -148,7 +149,8 @@ function PaymentPage() {
 
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-hairline bg-surface p-5">
               <p className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-                <Lock className="h-3.5 w-3.5" /> You will not be charged until the fare is re-verified.
+                <Lock className="h-3.5 w-3.5" /> You will not be charged until the fare is
+                re-verified.
               </p>
               <Link
                 to="/confirmation"

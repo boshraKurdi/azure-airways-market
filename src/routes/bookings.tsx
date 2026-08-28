@@ -12,7 +12,8 @@ export const Route = createFileRoute("/bookings")({
       { title: "My bookings — trips, status and e-tickets | Skyla" },
       {
         name: "description",
-        content: "Track upcoming, completed and cancelled Skyla flight bookings with live status and prices.",
+        content:
+          "Track upcoming, completed and cancelled Skyla flight bookings with live status and prices.",
       },
       { property: "og:title", content: "My bookings | Skyla" },
       {
@@ -126,7 +127,7 @@ function BookingsPage() {
               action={
                 <Link
                   to="/search"
-              search={{}}
+                  search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
                   className="rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground"
                 >
                   Find a flight

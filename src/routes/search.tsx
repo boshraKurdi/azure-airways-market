@@ -47,7 +47,9 @@ function SearchPage() {
   const [maxPrice, setMaxPrice] = useState(1200);
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
   const [stops, setStops] = useState<"any" | "0" | "1">("any");
-  const [departWindow, setDepartWindow] = useState<"any" | "morning" | "afternoon" | "night">("any");
+  const [departWindow, setDepartWindow] = useState<"any" | "morning" | "afternoon" | "night">(
+    "any",
+  );
   const [sort, setSort] = useState<Sort>("cheapest");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -108,7 +110,10 @@ function SearchPage() {
         <p className="eyebrow">Airlines</p>
         <div className="mt-3 space-y-2.5">
           {airlines.map((a) => (
-            <label key={a} className="flex cursor-pointer items-center gap-2.5 text-sm text-ink-soft">
+            <label
+              key={a}
+              className="flex cursor-pointer items-center gap-2.5 text-sm text-ink-soft"
+            >
               <input
                 type="checkbox"
                 checked={selectedAirlines.includes(a)}

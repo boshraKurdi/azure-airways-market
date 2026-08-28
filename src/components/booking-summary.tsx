@@ -77,7 +77,8 @@ export function BookingSummary({
       )}
 
       <p className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-medium text-success">
-        <ShieldCheck className="h-3.5 w-3.5" /> Price verified {flight.verifiedMinutesAgo} minutes ago
+        <ShieldCheck className="h-3.5 w-3.5" /> Price verified {flight.verifiedMinutesAgo} minutes
+        ago
       </p>
     </aside>
   );

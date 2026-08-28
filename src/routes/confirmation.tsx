@@ -12,7 +12,8 @@ export const Route = createFileRoute("/confirmation")({
       { title: "Booking confirmed — your e-ticket is on the way | Skyla" },
       {
         name: "description",
-        content: "Your Skyla booking is confirmed. View your reference, flight, passenger and payment status.",
+        content:
+          "Your Skyla booking is confirmed. View your reference, flight, passenger and payment status.",
       },
       { property: "og:title", content: "Booking confirmed | Skyla" },
       {

@@ -9,7 +9,8 @@ export const Route = createFileRoute("/help")({
       { title: "Help center — bookings, payments and baggage | Skyla" },
       {
         name: "description",
-        content: "Answers about Skyla bookings, payment methods including Sham Cash, baggage rules and cancellations.",
+        content:
+          "Answers about Skyla bookings, payment methods including Sham Cash, baggage rules and cancellations.",
       },
       { property: "og:title", content: "Help center | Skyla" },
       {
@@ -22,16 +23,40 @@ export const Route = createFileRoute("/help")({
 });
 
 const topics = [
-  { icon: Plane, title: "Bookings & tickets", body: "E-ticket delivery, name corrections, check-in windows." },
-  { icon: Wallet, title: "Payments", body: "Sham Cash transfers, cards, refunds and payment status." },
-  { icon: LifeBuoy, title: "Changes & cancellations", body: "24-hour free cancellation and airline fare rules." },
+  {
+    icon: Plane,
+    title: "Bookings & tickets",
+    body: "E-ticket delivery, name corrections, check-in windows.",
+  },
+  {
+    icon: Wallet,
+    title: "Payments",
+    body: "Sham Cash transfers, cards, refunds and payment status.",
+  },
+  {
+    icon: LifeBuoy,
+    title: "Changes & cancellations",
+    body: "24-hour free cancellation and airline fare rules.",
+  },
 ];
 
 const faqs = [
-  ["Is Skyla an airline?", "No. Skyla is a flight marketplace. Offers are published by our operations team and the ticket is issued by the operating carrier."],
-  ["How is the price verified?", "Each offer is re-checked against the carrier before it is shown, and again before payment is taken. The timestamp is displayed on every result."],
-  ["Which payment methods are supported?", "Sham Cash, international cards and major wallets. Bookings paid by Sham Cash are usually issued within 10 minutes."],
-  ["Can I cancel?", "Yes — free cancellation within 24 hours of booking, then the airline's fare rules apply."],
+  [
+    "Is Skyla an airline?",
+    "No. Skyla is a flight marketplace. Offers are published by our operations team and the ticket is issued by the operating carrier.",
+  ],
+  [
+    "How is the price verified?",
+    "Each offer is re-checked against the carrier before it is shown, and again before payment is taken. The timestamp is displayed on every result.",
+  ],
+  [
+    "Which payment methods are supported?",
+    "Sham Cash, international cards and major wallets. Bookings paid by Sham Cash are usually issued within 10 minutes.",
+  ],
+  [
+    "Can I cancel?",
+    "Yes — free cancellation within 24 hours of booking, then the airline's fare rules apply.",
+  ],
 ];
 
 function HelpPage() {
