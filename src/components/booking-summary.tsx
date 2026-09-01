@@ -1,8 +1,24 @@
 import { Link } from "@tanstack/react-router";
 import { Info, ShieldCheck } from "lucide-react";
-import type { Flight } from "@/lib/flight-data";
-import { formatDate, formatPrice } from "@/lib/flight-data";
+import type { Flight } from "@/lib/types/flights";
 import { RouteVisual } from "./route-visual";
+
+const formatDate = (value: string) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(date);
+};
+
+const formatPrice = (value: number, currency = "USD") =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(value);
 
 export function BookingSummary({
   flight,
@@ -35,7 +51,7 @@ export function BookingSummary({
         {formatDate(flight.departDate)} · {flight.departTime} — {flight.arriveTime}
       </p>
       <p className="text-xs text-muted-foreground">
-        {flight.airline} · {flight.flightNumber} · {flight.cabin}
+        {flight.airline} · {flight.flightNumber}
       </p>
 
       <dl className="mt-6 space-y-2.5 border-t border-hairline pt-5 text-sm">

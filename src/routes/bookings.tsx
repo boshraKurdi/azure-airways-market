@@ -1,10 +1,51 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { RouteVisual } from "@/components/route-visual";
 import { AirlineMark, EmptyState, Price, StatusBadge } from "@/components/ui-kit";
-import { bookings, formatDate, getFlight, type BookingStatus } from "@/lib/flight-data";
+import { getFlights } from "@/lib/api/flights";
 import { cn } from "@/lib/utils";
+import { useProtectedRoute } from "@/hooks/use-protected-route";
+
+const bookings = [
+  {
+    flightId: "1",
+    reference: "SKY-8FQ2ML",
+    status: "upcoming",
+    passengers: 1,
+    paymentStatus: "Paid",
+    total: 245,
+  },
+  {
+    flightId: "2",
+    reference: "SKY-0A14TN",
+    status: "completed",
+    passengers: 2,
+    paymentStatus: "Paid",
+    total: 380,
+  },
+  {
+    flightId: "3",
+    reference: "SKY-2LKM7Q",
+    status: "cancelled",
+    passengers: 1,
+    paymentStatus: "Refunded",
+    total: 180,
+  },
+] as const;
+
+type BookingStatus = (typeof bookings)[number]["status"];
+
+const formatDate = (value: string | undefined) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(date);
+};
 
 export const Route = createFileRoute("/bookings")({
   head: () => ({
@@ -35,6 +76,14 @@ const tone = (s: BookingStatus) =>
   s === "upcoming" ? "accent" : s === "completed" ? "success" : "danger";
 
 function BookingsPage() {
+  // Protect this route - only authenticated users can access
+  useProtectedRoute();
+
+  const { data: flights = [] } = useQuery({
+    queryKey: ["bookings-flights"],
+    queryFn: () => getFlights({ page: 1, limit: 50 }),
+  });
+
   const [tab, setTab] = useState<BookingStatus>("upcoming");
   const list = bookings.filter((b) => b.status === tab);
 
@@ -65,7 +114,9 @@ function BookingsPage() {
         <div className="mt-6 space-y-4">
           {list.length ? (
             list.map((b) => {
-              const f = getFlight(b.flightId);
+              const f = flights.find((flight) => flight.id === b.flightId) ?? flights[0];
+              if (!f) return null;
+
               return (
                 <article
                   key={b.reference}

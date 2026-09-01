@@ -1,10 +1,19 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, BriefcaseBusiness, Clock3, ShieldCheck } from "lucide-react";
-import type { Flight } from "@/lib/flight-data";
-import { formatDate } from "@/lib/flight-data";
+import { ArrowRight, Clock3, ShieldCheck } from "lucide-react";
+import type { Flight } from "@/lib/types/flights";
 import { RouteVisual } from "./route-visual";
-import { AirlineMark, Price, StatusBadge } from "./ui-kit";
+import { AirlineMark, Price } from "./ui-kit";
 import { cn } from "@/lib/utils";
+
+const formatDate = (value: string) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(date);
+};
 
 export function OfferCard({ flight }: { flight: Flight }) {
   return (
@@ -17,11 +26,6 @@ export function OfferCard({ flight }: { flight: Flight }) {
             <p className="text-xs text-muted-foreground">{flight.flightNumber}</p>
           </div>
         </div>
-        {flight.tag && (
-          <StatusBadge tone={flight.tag === "Almost gone" ? "warning" : "accent"}>
-            {flight.tag}
-          </StatusBadge>
-        )}
       </div>
 
       <RouteVisual
@@ -42,7 +46,7 @@ export function OfferCard({ flight }: { flight: Flight }) {
           <Clock3 className="h-3.5 w-3.5" /> {formatDate(flight.departDate)} · {flight.departTime}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <BriefcaseBusiness className="h-3.5 w-3.5" /> {flight.baggage.checked}
+          {flight.availableSeats > 0 ? `${flight.availableSeats} seats` : "Sold out"}
         </span>
       </div>
 
@@ -69,25 +73,16 @@ export function ResultRow({ flight }: { flight: Flight }) {
     <article
       className={cn(
         "group rounded-xl border bg-surface p-5 shadow-card transition-all duration-300 hover:border-accent/35 hover:shadow-lift sm:p-6",
-        flight.recommended ? "border-accent/45 ring-1 ring-accent/15" : "border-hairline",
+        "border-hairline",
       )}
     >
-      {flight.recommended && (
-        <div className="mb-4 flex items-center gap-2">
-          <StatusBadge tone="accent">Recommended</StatusBadge>
-          <span className="text-xs text-muted-foreground">Best mix of price, time and baggage</span>
-        </div>
-      )}
-
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-8">
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-2.5">
             <AirlineMark code={flight.airlineCode} />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-ink">{flight.airline}</p>
-              <p className="text-xs text-muted-foreground">
-                {flight.flightNumber} · {flight.cabin}
-              </p>
+              <p className="text-xs text-muted-foreground">{flight.flightNumber}</p>
             </div>
           </div>
 
@@ -102,8 +97,8 @@ export function ResultRow({ flight }: { flight: Flight }) {
             </div>
             <div className="min-w-0">
               <RouteVisual
-                from=""
-                to=""
+                from={flight.from.code}
+                to={flight.to.code}
                 duration={flight.duration}
                 stops={flight.stops.length}
                 size="sm"
@@ -121,14 +116,8 @@ export function ResultRow({ flight }: { flight: Flight }) {
 
           <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-ink-soft">
             <span className="inline-flex items-center gap-1.5">
-              <BriefcaseBusiness className="h-3.5 w-3.5" /> Cabin {flight.baggage.cabin} · Checked{" "}
-              {flight.baggage.checked}
+              {flight.availableSeats > 0 ? `${flight.availableSeats} seats available` : "Sold out"}
             </span>
-            {flight.stops[0] && (
-              <span className="text-muted-foreground">
-                {flight.stops[0].layover} in {flight.stops[0].city}
-              </span>
-            )}
           </div>
         </div>
 

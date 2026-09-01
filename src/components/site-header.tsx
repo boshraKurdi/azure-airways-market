@@ -1,7 +1,9 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Globe, Menu, Plane, UserRound, X } from "lucide-react";
+import { Globe, Menu, Plane, UserRound, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth-context";
+import { toast } from "sonner";
 
 const links = [
   { to: "/search", label: "Flights" },
@@ -10,6 +12,8 @@ const links = [
 ] as const;
 
 export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -21,6 +25,12 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
   }, []);
 
   const solid = !transparent || scrolled;
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully");
+    navigate({ to: "/" });
+  };
 
   return (
     <header
@@ -86,18 +96,46 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
             <Globe className="h-4 w-4" />
             EN
           </button>
-          <Link
-            to="/login"
-            className={cn(
-              "hidden items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all sm:inline-flex",
-              solid
-                ? "bg-primary text-primary-foreground hover:opacity-90"
-                : "bg-primary-foreground text-primary hover:bg-primary-foreground/90",
-            )}
-          >
-            <UserRound className="h-4 w-4" />
-            Login
-          </Link>
+
+          {user ? (
+            <div className="flex items-center gap-2">
+              <div
+                className={cn(
+                  "hidden items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold sm:flex",
+                  solid ? "text-ink" : "text-primary-foreground",
+                )}
+              >
+                <UserRound className="h-4 w-4" />
+                <span className="truncate max-w-[120px]">{user.name}</span>
+              </div>
+              <button
+                onClick={handleLogout}
+                type="button"
+                className={cn(
+                  "hidden items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all sm:inline-flex",
+                  solid
+                    ? "bg-destructive/10 text-destructive hover:bg-destructive/15"
+                    : "bg-destructive/20 text-destructive-foreground hover:bg-destructive/30",
+                )}
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className={cn(
+                "hidden items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all sm:inline-flex",
+                solid
+                  ? "bg-primary text-primary-foreground hover:opacity-90"
+                  : "bg-primary-foreground text-primary hover:bg-primary-foreground/90",
+              )}
+            >
+              <UserRound className="h-4 w-4" />
+              Login
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -117,7 +155,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
       {open && (
         <div className="animate-fade border-t border-hairline bg-surface px-5 py-3 lg:hidden">
           <div className="flex flex-col">
-            {[...links, { to: "/login", label: "Login" } as const].map((l) => (
+            {links.map((l) => (
               <Link
                 key={l.to}
                 to={l.to}
@@ -127,6 +165,31 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
                 {l.label}
               </Link>
             ))}
+            {user ? (
+              <>
+                <div className="border-t border-hairline py-3 px-2 text-sm font-semibold text-ink">
+                  {user.name}
+                </div>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setOpen(false);
+                  }}
+                  className="flex items-center gap-2 rounded-md px-2 py-3 text-sm font-semibold text-destructive hover:bg-destructive/10"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setOpen(false)}
+                className="rounded-md px-2 py-3 text-sm font-semibold text-ink hover:bg-surface-muted"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       )}

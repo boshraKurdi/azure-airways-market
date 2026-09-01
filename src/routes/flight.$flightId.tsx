@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, BriefcaseBusiness, Plane, ShieldCheck, Users } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { BookingSummary } from "@/components/booking-summary";
-import { AirlineMark, StatusBadge } from "@/components/ui-kit";
+import { AirlineMark, EmptyState, StatusBadge } from "@/components/ui-kit";
 import { RouteVisual } from "@/components/route-visual";
-import { formatDate, getFlight } from "@/lib/flight-data";
+import { getFlightById } from "@/lib/api/flights";
 
 export const Route = createFileRoute("/flight/$flightId")({
   head: () => ({
@@ -26,8 +27,48 @@ export const Route = createFileRoute("/flight/$flightId")({
 });
 
 function FlightDetails() {
+  const navigate = useNavigate();
   const { flightId } = Route.useParams();
-  const flight = getFlight(flightId);
+  const { data: flight, isLoading, error } = useQuery({
+    queryKey: ["flight-detail", flightId],
+    queryFn: () => getFlightById(flightId),
+  });
+
+  if (isLoading) {
+    return (
+      <PageShell>
+        <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
+          <div className="flex min-h-[30vh] items-center justify-center text-center">
+            <div>
+              <div className="inline-flex h-8 w-8 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+              <p className="mt-4 text-sm text-muted-foreground">Loading flight details...</p>
+            </div>
+          </div>
+        </div>
+      </PageShell>
+    );
+  }
+
+  if (error || !flight) {
+    return (
+      <PageShell>
+        <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
+          <EmptyState
+            title="Flight not found"
+            description="The selected flight could not be loaded."
+            action={
+              <button
+                onClick={() => navigate({ to: "/search", search: { from: "", to: "", depart: "", passengers: 1, cabin: "Economy" } })}
+                className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+              >
+                Back to search
+              </button>
+            }
+          />
+        </div>
+      </PageShell>
+    );
+  }
 
   const timeline = [
     {
@@ -53,13 +94,13 @@ function FlightDetails() {
   return (
     <PageShell>
       <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
-        <Link
-          to="/search"
-          search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/search", search: { from: "", to: "", depart: "", passengers: 1, cabin: "Economy" } })}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-accent"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to results
-        </Link>
+        </button>
 
         <div className="mt-5 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="min-w-0 space-y-5">
@@ -71,9 +112,7 @@ function FlightDetails() {
                     <h1 className="truncate text-lg font-semibold text-ink sm:text-xl">
                       {flight.airline}
                     </h1>
-                    <p className="text-xs text-muted-foreground">
-                      Flight {flight.flightNumber} · {flight.cabin}
-                    </p>
+                    <p className="text-xs text-muted-foreground">Flight {flight.flightNumber}</p>
                   </div>
                 </div>
                 <StatusBadge tone="success">
@@ -96,10 +135,10 @@ function FlightDetails() {
 
               <dl className="mt-8 grid gap-5 border-t border-hairline pt-6 sm:grid-cols-4">
                 {[
-                  ["Date", formatDate(flight.departDate)],
+                  ["Date", new Date(flight.departDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })],
                   ["Duration", flight.duration],
                   ["Stops", flight.stops.length === 0 ? "Direct" : `${flight.stops.length} stop`],
-                  ["Cabin", flight.cabin],
+                  ["Seats", `${flight.availableSeats} available`],
                 ].map(([k, v]) => (
                   <div key={k}>
                     <dt className="eyebrow">{k}</dt>
@@ -137,20 +176,18 @@ function FlightDetails() {
             <section className="grid gap-5 sm:grid-cols-2">
               <div className="rounded-xl border border-hairline bg-surface p-6">
                 <BriefcaseBusiness className="h-5 w-5 text-accent" />
-                <h3 className="mt-4 text-sm font-semibold text-ink">Baggage allowance</h3>
+                <h3 className="mt-4 text-sm font-semibold text-ink">Booking essentials</h3>
                 <ul className="mt-3 space-y-1.5 text-xs text-muted-foreground">
-                  <li>Cabin bag: {flight.baggage.cabin}</li>
-                  <li>Checked bag: {flight.baggage.checked}</li>
-                  <li>Extra bags can be added at check-in</li>
+                  <li>Carry-on and checked baggage are handled at the airline level.</li>
+                  <li>Free cancellation window applies at checkout.</li>
                 </ul>
               </div>
               <div className="rounded-xl border border-hairline bg-surface p-6">
                 <Users className="h-5 w-5 text-accent" />
                 <h3 className="mt-4 text-sm font-semibold text-ink">Availability</h3>
                 <ul className="mt-3 space-y-1.5 text-xs text-muted-foreground">
-                  <li>{flight.seatsLeft} seats left at this fare</li>
+                  <li>{flight.availableSeats} seats left at this fare</li>
                   <li>Instant confirmation e-ticket</li>
-                  <li>Free cancellation within 24 hours</li>
                 </ul>
               </div>
             </section>

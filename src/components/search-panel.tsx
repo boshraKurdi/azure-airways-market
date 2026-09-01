@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { ArrowLeftRight, CalendarDays, Minus, Plus, Search, Users } from "lucide-react";
-import { airports } from "@/lib/flight-data";
+import { getAirports } from "@/lib/api/flights";
 import { cn } from "@/lib/utils";
 import { inputClass } from "./ui-kit";
 
@@ -10,12 +10,25 @@ const cabins = ["Economy", "Premium Economy", "Business"] as const;
 export function SearchPanel({ compact = false }: { compact?: boolean }) {
   const navigate = useNavigate();
   const [trip, setTrip] = useState<"round" | "one">("round");
+  const [airports, setAirports] = useState<Array<{ code: string; city: string; airport: string; country: string }>>([]);
   const [from, setFrom] = useState("DAM");
   const [to, setTo] = useState("IST");
   const [depart, setDepart] = useState("2026-09-12");
   const [ret, setRet] = useState("2026-09-19");
   const [passengers, setPassengers] = useState(1);
   const [cabin, setCabin] = useState<(typeof cabins)[number]>("Economy");
+
+  useEffect(() => {
+    void getAirports().then((result) => {
+      setAirports(result);
+      if (!result.some((airport) => airport.code === from)) {
+        setFrom(result[0]?.code ?? "");
+      }
+      if (!result.some((airport) => airport.code === to)) {
+        setTo(result[1]?.code ?? result[0]?.code ?? "");
+      }
+    });
+  }, []);
 
   const swap = () => {
     setFrom(to);
@@ -26,6 +39,7 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
     <form
       onSubmit={(e) => {
         e.preventDefault();
+        if (!from || !to || !depart) return;
         navigate({ to: "/search", search: { from, to, depart, passengers, cabin } });
       }}
       className={cn(
@@ -80,11 +94,15 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
               onChange={(e) => setFrom(e.target.value)}
               className={cn(inputClass, "mt-2 appearance-none pr-8")}
             >
-              {airports.map((a) => (
-                <option key={a.code} value={a.code}>
-                  {a.city} ({a.code})
-                </option>
-              ))}
+              {airports.length ? (
+                airports.map((a) => (
+                  <option key={a.code} value={a.code}>
+                    {a.city} ({a.code})
+                  </option>
+                ))
+              ) : (
+                <option value="">Loading airports...</option>
+              )}
             </select>
           </label>
           <label className="block">
@@ -94,11 +112,15 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
               onChange={(e) => setTo(e.target.value)}
               className={cn(inputClass, "mt-2 appearance-none pr-8")}
             >
-              {airports.map((a) => (
-                <option key={a.code} value={a.code}>
-                  {a.city} ({a.code})
-                </option>
-              ))}
+              {airports.length ? (
+                airports.map((a) => (
+                  <option key={a.code} value={a.code}>
+                    {a.city} ({a.code})
+                  </option>
+                ))
+              ) : (
+                <option value="">Loading airports...</option>
+              )}
             </select>
           </label>
           <button

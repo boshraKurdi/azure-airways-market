@@ -1,10 +1,28 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Download, Mail } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { Steps } from "@/components/steps";
 import { RouteVisual } from "@/components/route-visual";
-import { AirlineMark, StatusBadge } from "@/components/ui-kit";
-import { flights, formatDate, formatPrice } from "@/lib/flight-data";
+import { AirlineMark, EmptyState, StatusBadge } from "@/components/ui-kit";
+import { getFlights } from "@/lib/api/flights";
+
+const formatDate = (value: string) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(date);
+};
+
+const formatPrice = (value: number, currency = "USD") =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(value);
 
 export const Route = createFileRoute("/confirmation")({
   head: () => ({
@@ -26,7 +44,33 @@ export const Route = createFileRoute("/confirmation")({
 });
 
 function ConfirmationPage() {
-  const flight = flights[0]!;
+  const { data: flight } = useQuery({
+    queryKey: ["confirmation-flight"],
+    queryFn: () => getFlights({ page: 1, limit: 1 }).then((items) => items[0] ?? null),
+  });
+
+  if (!flight) {
+    return (
+      <PageShell>
+        <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
+          <EmptyState
+            title="Booking unavailable"
+            description="We could not load the confirmed flight details."
+            action={
+              <Link
+                to="/search"
+                search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
+                className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+              >
+                Search flights
+              </Link>
+            }
+          />
+        </div>
+      </PageShell>
+    );
+  }
+
   const total = Math.round(flight.price * 1.12) + 9;
 
   return (

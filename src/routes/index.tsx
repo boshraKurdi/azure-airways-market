@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, BellRing, Sparkles, TicketPercent, TrendingDown } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { SearchPanel } from "@/components/search-panel";
 import { OfferCard } from "@/components/flight-card";
 import { SectionHeading, StatusBadge } from "@/components/ui-kit";
-import { flights, formatPrice } from "@/lib/flight-data";
+import { getFlights } from "@/lib/api/flights";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -43,16 +44,19 @@ const trustPoints = [
   },
 ];
 
-const routesStrip = [
-  { pair: "DAM → IST", price: 189 },
-  { pair: "CAI → IST", price: 168 },
-  { pair: "IST → BER", price: 134 },
-  { pair: "BEY → DXB", price: 212 },
-  { pair: "DAM → DOH", price: 246 },
-  { pair: "AMM → CDG", price: 389 },
-];
+const formatPrice = (value: number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
 
 function Home() {
+  const { data: flights = [] } = useQuery({
+    queryKey: ["home-flights"],
+    queryFn: () => getFlights({ page: 1, limit: 12 }),
+  });
+
   const cheapest = [...flights].sort((a, b) => a.price - b.price).slice(0, 6);
 
   return (
@@ -63,7 +67,7 @@ function Home() {
           <div className="animate-rise max-w-3xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-foreground/85">
               <Sparkles className="h-3.5 w-3.5" />
-              1,240 offers verified today
+              Live offers from the backend
             </span>
             <h1 className="mt-6 text-4xl font-semibold leading-[1.05] text-primary-foreground sm:text-6xl">
               Find your next flight
@@ -84,15 +88,15 @@ function Home() {
         </div>
 
         <div className="mt-6 flex gap-2.5 overflow-x-auto pb-2">
-          {routesStrip.map((r) => (
+          {cheapest.slice(0, 6).map((flight) => (
             <Link
-              key={r.pair}
+              key={flight.id}
               to="/search"
-              search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
+              search={{ from: flight.from.code, to: flight.to.code, depart: flight.departDate, passengers: 1, cabin: "Economy" }}
               className="group inline-flex shrink-0 items-center gap-2.5 rounded-full border border-hairline bg-surface px-4 py-2 text-xs font-semibold text-ink shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40"
             >
-              <span className="tabular">{r.pair}</span>
-              <span className="tabular text-accent">{formatPrice(r.price)}</span>
+              <span className="tabular">{flight.from.code} → {flight.to.code}</span>
+              <span className="tabular text-accent">{formatPrice(flight.price)}</span>
             </Link>
           ))}
         </div>

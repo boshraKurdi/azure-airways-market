@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { SlidersHorizontal, X } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { SearchPanel } from "@/components/search-panel";
 import { ResultRow } from "@/components/flight-card";
-import { EmptyState, StatusBadge } from "@/components/ui-kit";
-import { airlines, flights, formatPrice } from "@/lib/flight-data";
+import { EmptyState, SkeletonCard, StatusBadge } from "@/components/ui-kit";
+import { searchFlights } from "@/lib/api/flights";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/search")({
@@ -16,8 +17,8 @@ export const Route = createFileRoute("/search")({
     passengers?: number;
     cabin?: string;
   }) => ({
-    from: search.from ?? "",
-    to: search.to ?? "",
+    from: String(search.from ?? "").toUpperCase(),
+    to: String(search.to ?? "").toUpperCase(),
     depart: search.depart ?? "",
     passengers: Number(search.passengers ?? 1),
     cabin: search.cabin ?? "Economy",
@@ -43,19 +44,41 @@ export const Route = createFileRoute("/search")({
 type Sort = "cheapest" | "fastest" | "earliest";
 
 function SearchPage() {
-  const { passengers } = Route.useSearch();
-  const [maxPrice, setMaxPrice] = useState(1200);
+  const { from, to, depart, passengers } = Route.useSearch();
+  const [maxPrice, setMaxPrice] = useState(2000);
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
-  const [stops, setStops] = useState<"any" | "0" | "1">("any");
+  const [stops, setStops] = useState<"any" | "0" | "1">("0");
   const [departWindow, setDepartWindow] = useState<"any" | "morning" | "afternoon" | "night">(
     "any",
   );
   const [sort, setSort] = useState<Sort>("cheapest");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
+  const { data: allFlights = [], isLoading, error, refetch } = useQuery({
+    queryKey: ["flights-search", { from, to, depart, passengers }],
+    queryFn: () =>
+      searchFlights({
+        from: from || undefined,
+        to: to || undefined,
+        departureDate: depart || undefined,
+        passengers: passengers || 1,
+      }),
+    enabled: !!from && !!to && !!depart,
+  });
+
+  const airlineOptions = useMemo(
+    () => [...new Set(allFlights.map((flight) => flight.airline))].sort(),
+    [allFlights],
+  );
+
+  const highestPrice = useMemo(
+    () => Math.max(2000, ...allFlights.map((flight) => flight.price), 2000),
+    [allFlights],
+  );
+
   const results = useMemo(() => {
     const hour = (t: string) => Number(t.split(":")[0]);
-    let list = flights.filter((f) => {
+    let list = allFlights.filter((f) => {
       if (f.price > maxPrice) return false;
       if (selectedAirlines.length && !selectedAirlines.includes(f.airline)) return false;
       if (stops === "0" && f.stops.length !== 0) return false;
@@ -74,15 +97,21 @@ function SearchPage() {
           : a.departTime.localeCompare(b.departTime),
     );
     return list;
-  }, [maxPrice, selectedAirlines, stops, departWindow, sort]);
+  }, [allFlights, maxPrice, selectedAirlines, stops, departWindow, sort]);
+
+  useMemo(() => {
+    if (allFlights.length > 0 && maxPrice > highestPrice) {
+      setMaxPrice(highestPrice);
+    }
+  }, [allFlights, highestPrice, maxPrice]);
 
   const toggleAirline = (a: string) =>
     setSelectedAirlines((prev) => (prev.includes(a) ? prev.filter((x) => x !== a) : [...prev, a]));
 
   const reset = () => {
-    setMaxPrice(1200);
+    setMaxPrice(highestPrice);
     setSelectedAirlines([]);
-    setStops("any");
+    setStops("0");
     setDepartWindow("any");
   };
 
@@ -98,7 +127,7 @@ function SearchPage() {
         <input
           type="range"
           min={100}
-          max={1200}
+          max={highestPrice}
           step={10}
           value={maxPrice}
           onChange={(e) => setMaxPrice(Number(e.target.value))}
@@ -109,7 +138,7 @@ function SearchPage() {
       <div>
         <p className="eyebrow">Airlines</p>
         <div className="mt-3 space-y-2.5">
-          {airlines.map((a) => (
+          {airlineOptions.map((a) => (
             <label
               key={a}
               className="flex cursor-pointer items-center gap-2.5 text-sm text-ink-soft"
@@ -131,8 +160,8 @@ function SearchPage() {
         <div className="mt-3 grid grid-cols-3 gap-2">
           {(
             [
+              ["0", "Non-stop"],
               ["any", "Any"],
-              ["0", "Direct"],
               ["1", "1+ stop"],
             ] as const
           ).map(([k, l]) => (
@@ -210,7 +239,7 @@ function SearchPage() {
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:justify-between">
           <div className="min-w-0">
             <h1 className="truncate text-xl font-semibold text-ink sm:text-2xl">
-              {results.length} offers found
+              {!from || !to || !depart ? "Search for flights" : isLoading ? "Loading offers..." : `${results.length} offers found`}
             </h1>
             <p className="mt-1 text-xs text-muted-foreground">
               {passengers} passenger{passengers > 1 ? "s" : ""} · prices per person, taxes shown at
@@ -257,25 +286,46 @@ function SearchPage() {
           </div>
 
           <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <StatusBadge tone="accent">Fares verified live</StatusBadge>
-              <StatusBadge>Sorted by {sort}</StatusBadge>
-            </div>
-            {results.length ? (
-              results.map((f) => <ResultRow key={f.id} flight={f} />)
-            ) : (
+            {!from || !to || !depart ? (
               <EmptyState
-                title="No offers match these filters"
-                description="Try widening your price range or allowing flights with one stop."
+                title="Search for flights"
+                description="Choose your departure airport, destination, and travel date to see live offers from the backend."
+              />
+            ) : isLoading ? (
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <SkeletonCard key={index} />
+                ))}
+              </div>
+            ) : error ? (
+              <EmptyState
+                title="Unable to load flights"
+                description="Please try again in a moment."
                 action={
                   <button
-                    onClick={reset}
-                    className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+                    type="button"
+                    onClick={() => void refetch()}
+                    className="rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground"
                   >
-                    Reset filters
+                    Try again
                   </button>
                 }
               />
+            ) : results.length === 0 ? (
+              <EmptyState
+                title="No flights found"
+                description="Try another destination, date, or adjust your filters."
+              />
+            ) : (
+              <>
+                <div className="flex flex-wrap gap-2">
+                  <StatusBadge tone="accent">Fares verified live</StatusBadge>
+                  <StatusBadge>Sorted by {sort}</StatusBadge>
+                </div>
+                {results.map((f) => (
+                  <ResultRow key={f.id} flight={f} />
+                ))}
+              </>
             )}
           </div>
         </div>

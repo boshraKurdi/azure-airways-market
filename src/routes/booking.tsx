@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Lock, Plus, Trash2 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { Steps } from "@/components/steps";
 import { BookingSummary } from "@/components/booking-summary";
-import { Field, inputClass } from "@/components/ui-kit";
-import { flights } from "@/lib/flight-data";
+import { EmptyState, Field, inputClass } from "@/components/ui-kit";
+import { getFlights } from "@/lib/api/flights";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/booking")({
@@ -28,8 +29,33 @@ export const Route = createFileRoute("/booking")({
 });
 
 function BookingPage() {
-  const flight = flights[0]!;
+  const { data: flight } = useQuery({
+    queryKey: ["booking-flight"],
+    queryFn: () => getFlights({ page: 1, limit: 1 }).then((items) => items[0] ?? null),
+  });
   const [count, setCount] = useState(1);
+
+  if (!flight) {
+    return (
+      <PageShell>
+        <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
+          <EmptyState
+            title="No flight selected"
+            description="Choose a flight before completing your booking details."
+            action={
+              <Link
+                to="/search"
+                search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
+                className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+              >
+                Find a flight
+              </Link>
+            }
+          />
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>
