@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider, useAuth } from "../lib/auth-context";
+import { LocaleProvider, useI18n } from "../lib/i18n";
 import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
@@ -117,7 +118,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" dir="ltr">
       <head>
         <HeadContent />
       </head>
@@ -134,15 +135,18 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RootInner />
-      </AuthProvider>
+      <LocaleProvider>
+        <AuthProvider>
+          <RootInner />
+        </AuthProvider>
+      </LocaleProvider>
     </QueryClientProvider>
   );
 }
 
 function RootInner() {
   const { isLoading } = useAuth();
+  const { t } = useI18n();
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -150,7 +154,7 @@ function RootInner() {
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
           <div className="inline-flex h-8 w-8 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
-          <p className="mt-4 text-sm text-muted-foreground">Loading...</p>
+          <p className="mt-4 text-sm text-muted-foreground">{t("Loading")}</p>
         </div>
       </div>
     );

@@ -4,10 +4,12 @@ import { ArrowLeftRight, CalendarDays, Minus, Plus, Search, Users } from "lucide
 import { getAirports } from "@/lib/api/flights";
 import { cn } from "@/lib/utils";
 import { inputClass } from "./ui-kit";
+import { useI18n } from "@/lib/i18n";
 
 const cabins = ["Economy", "Premium Economy", "Business"] as const;
 
 export function SearchPanel({ compact = false }: { compact?: boolean }) {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [trip, setTrip] = useState<"round" | "one">("round");
   const [airports, setAirports] = useState<Array<{ code: string; city: string; airport: string; country: string }>>([]);
@@ -64,7 +66,7 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
                 trip === key ? "bg-surface text-ink shadow-card" : "text-muted-foreground",
               )}
             >
-              {label}
+              {t(label)}
             </button>
           ))}
         </div>
@@ -79,7 +81,7 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
                 cabin === c ? "bg-surface text-ink shadow-card" : "text-muted-foreground",
               )}
             >
-              {c}
+              {t(c)}
             </button>
           ))}
         </div>
@@ -88,7 +90,7 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
       <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,2fr)_auto]">
         <div className="relative grid grid-cols-2 gap-3">
           <label className="block">
-            <span className="eyebrow">From</span>
+            <span className="eyebrow">{t("From")}</span>
             <select
               value={from}
               onChange={(e) => setFrom(e.target.value)}
@@ -101,12 +103,12 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
                   </option>
                 ))
               ) : (
-                <option value="">Loading airports...</option>
+                <option value="">{t("Loading airports...")}</option>
               )}
             </select>
           </label>
           <label className="block">
-            <span className="eyebrow">To</span>
+            <span className="eyebrow">{t("To")}</span>
             <select
               value={to}
               onChange={(e) => setTo(e.target.value)}
@@ -119,7 +121,7 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
                   </option>
                 ))
               ) : (
-                <option value="">Loading airports...</option>
+                <option value="">{t("Loading airports...")}</option>
               )}
             </select>
           </label>
@@ -135,7 +137,7 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
 
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
-            <span className="eyebrow">Departure</span>
+            <span className="eyebrow">{t("Departure")}</span>
             <div className="relative mt-2">
               <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -147,7 +149,7 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
             </div>
           </label>
           <label className={cn("block", trip === "one" && "opacity-45")}>
-            <span className="eyebrow">Return</span>
+            <span className="eyebrow">{t("Return")}</span>
             <div className="relative mt-2">
               <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -163,7 +165,7 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
 
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 lg:flex">
           <div className="min-w-0">
-            <span className="eyebrow">Passengers</span>
+            <span className="eyebrow">{t("Passengers")}</span>
             <div className="mt-2 flex h-11 items-center justify-between gap-2 rounded-lg border border-input bg-surface px-2.5">
               <Users className="h-4 w-4 shrink-0 text-muted-foreground" />
               <button
@@ -192,7 +194,7 @@ export function SearchPanel({ compact = false }: { compact?: boolean }) {
             className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-accent px-6 text-sm font-semibold text-accent-foreground transition-all hover:brightness-110 active:scale-[0.98]"
           >
             <Search className="h-4 w-4" />
-            <span className="hidden sm:inline">Search</span>
+            <span className="hidden sm:inline">{t("Search")}</span>
           </button>
         </div>
       </div>

@@ -1,9 +1,11 @@
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 
 const steps = ["Flight", "Passengers", "Payment", "Confirmation"];
 
 export function Steps({ current }: { current: number }) {
+  const { t } = useI18n();
   return (
     <ol className="flex items-center gap-2 overflow-x-auto pb-1 sm:gap-3">
       {steps.map((label, i) => {
@@ -28,7 +30,7 @@ export function Steps({ current }: { current: number }) {
                   active ? "text-ink" : "text-muted-foreground",
                 )}
               >
-                {label}
+                {t(label)}
               </span>
             </div>
             {i < steps.length - 1 && <span className="h-px w-6 bg-hairline sm:w-10" />}

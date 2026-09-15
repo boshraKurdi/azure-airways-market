@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Plane } from "lucide-react";
 import { SiteHeader } from "./site-header";
+import { useI18n } from "@/lib/i18n";
 
 export function AuthLayout({
   title,
@@ -14,6 +15,7 @@ export function AuthLayout({
   children: ReactNode;
   footer: ReactNode;
 }) {
+  const { t } = useI18n();
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -48,17 +50,17 @@ export function AuthLayout({
           <div className="absolute bottom-14 left-12 right-12">
             <Plane className="h-6 w-6 -rotate-45 text-primary-foreground/80" />
             <p className="mt-5 max-w-sm text-xl font-semibold leading-snug text-primary-foreground">
-              One account for every route you watch, book and fly.
+              {t("One account for every route you watch, book and fly.")}
             </p>
             <p className="mt-3 max-w-sm text-sm text-primary-foreground/60">
-              Save searches, get fare-drop alerts, and keep every e-ticket in one place.
+              {t("Save searches, get fare-drop alerts, and keep every e-ticket in one place.")}
             </p>
             <Link
               to="/search"
               search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
               className="mt-6 inline-block text-xs font-semibold text-primary-foreground/80 underline-offset-4 hover:underline"
             >
-              Browse offers instead →
+              {t("Browse offers instead →")}
             </Link>
           </div>
         </div>

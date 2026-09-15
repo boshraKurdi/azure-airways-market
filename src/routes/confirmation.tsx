@@ -5,7 +5,8 @@ import { PageShell } from "@/components/page-shell";
 import { Steps } from "@/components/steps";
 import { RouteVisual } from "@/components/route-visual";
 import { AirlineMark, EmptyState, StatusBadge } from "@/components/ui-kit";
-import { getFlights } from "@/lib/api/flights";
+import { useI18n } from "@/lib/i18n";
+import { getBookingById } from "@/lib/api/bookings";
 
 const formatDate = (value: string) => {
   if (!value) return "";
@@ -25,6 +26,7 @@ const formatPrice = (value: number, currency = "USD") =>
   }).format(value);
 
 export const Route = createFileRoute("/confirmation")({
+  validateSearch: (search: { bookingId?: string }) => ({ bookingId: search.bookingId ?? "" }),
   head: () => ({
     meta: [
       { title: "Booking confirmed — your e-ticket is on the way | Skyla" },
@@ -44,25 +46,38 @@ export const Route = createFileRoute("/confirmation")({
 });
 
 function ConfirmationPage() {
-  const { data: flight } = useQuery({
-    queryKey: ["confirmation-flight"],
-    queryFn: () => getFlights({ page: 1, limit: 1 }).then((items) => items[0] ?? null),
+  const { t } = useI18n();
+  const { bookingId } = Route.useSearch();
+  const { data: booking, isLoading } = useQuery({
+    queryKey: ["confirmation-booking", bookingId],
+    queryFn: () => getBookingById(bookingId),
+    enabled: Boolean(bookingId),
   });
 
-  if (!flight) {
+  if (isLoading) {
+    return (
+      <PageShell>
+        <div className="flex min-h-[30vh] items-center justify-center text-sm text-muted-foreground">
+          {t("Loading")}
+        </div>
+      </PageShell>
+    );
+  }
+
+  if (!booking) {
     return (
       <PageShell>
         <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
           <EmptyState
-            title="Booking unavailable"
-            description="We could not load the confirmed flight details."
+            title={t("Booking unavailable")}
+            description={t("We could not load the confirmed flight details.")}
             action={
               <Link
                 to="/search"
                 search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
                 className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
               >
-                Search flights
+                {t("Search flights")}
               </Link>
             }
           />
@@ -71,7 +86,8 @@ function ConfirmationPage() {
     );
   }
 
-  const total = Math.round(flight.price * 1.12) + 9;
+  const flight = booking.flight;
+  const total = Number(booking.totalPrice);
 
   return (
     <PageShell>
@@ -86,21 +102,21 @@ function ConfirmationPage() {
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-success/12">
             <CheckCircle2 className="h-7 w-7 text-success" strokeWidth={2} />
           </span>
-          <h1 className="mt-6 text-3xl font-semibold text-ink">Booking successful</h1>
+          <h1 className="mt-6 text-3xl font-semibold text-ink">{t("Booking successful")}</h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Your e-ticket has been sent to your email. Keep the reference below for check-in.
+            {t("Your e-ticket has been sent to your email. Keep the reference below for check-in.")}
           </p>
         </div>
 
         <div className="mt-8 rounded-xl border border-hairline bg-surface shadow-card">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-dashed border-hairline p-6">
             <div className="min-w-0">
-              <p className="eyebrow">Booking reference</p>
+              <p className="eyebrow">{t("Booking reference")}</p>
               <p className="text-display tabular mt-1.5 text-2xl font-semibold tracking-tight text-ink">
-                SKY-8FQ2ML
+                {booking.bookingReference}
               </p>
             </div>
-            <StatusBadge tone="success">Confirmed</StatusBadge>
+            <StatusBadge tone="success">{t("Confirmed")}</StatusBadge>
           </div>
 
           <div className="p-6">
@@ -126,20 +142,20 @@ function ConfirmationPage() {
 
             <dl className="mt-7 grid gap-5 border-t border-hairline pt-6 sm:grid-cols-4">
               {[
-                ["Passenger", "Boshra Kurdi"],
-                ["Payment", "Sham Cash"],
-                ["Payment status", "Paid"],
-                ["Order status", "Ticket issued"],
-              ].map(([k, v]) => (
-                <div key={k}>
-                  <dt className="eyebrow">{k}</dt>
-                  <dd className="mt-1.5 text-sm font-semibold text-ink">{v}</dd>
+                ["Passenger", booking.passengers.map((passenger) => `${passenger.firstName} ${passenger.lastName}`).join(", ")],
+                ["Payment", booking.paymentStatus],
+                ["Payment status", booking.paymentStatus],
+                ["Order status", booking.status],
+              ].map(([label, value]) => (
+                <div key={label}>
+                  <dt className="eyebrow">{t(label)}</dt>
+                  <dd className="mt-1.5 text-sm font-semibold text-ink">{t(value)}</dd>
                 </div>
               ))}
             </dl>
 
             <div className="mt-6 flex items-end justify-between border-t border-hairline pt-5">
-              <span className="text-sm font-semibold text-ink">Total paid</span>
+              <span className="text-sm font-semibold text-ink">{t("Total paid")}</span>
               <span className="text-display tabular text-3xl font-semibold text-price">
                 {formatPrice(total)}
               </span>
@@ -152,13 +168,13 @@ function ConfirmationPage() {
             to="/bookings"
             className="rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-all hover:brightness-110"
           >
-            View My Booking
+            {t("View My Booking")}
           </Link>
           <button className="inline-flex items-center gap-2 rounded-lg border border-hairline bg-surface px-5 py-3 text-sm font-semibold text-ink transition-colors hover:border-accent/40">
-            <Download className="h-4 w-4" /> Download e-ticket
+            <Download className="h-4 w-4" /> {t("Download e-ticket")}
           </button>
           <button className="inline-flex items-center gap-2 rounded-lg border border-hairline bg-surface px-5 py-3 text-sm font-semibold text-ink transition-colors hover:border-accent/40">
-            <Mail className="h-4 w-4" /> Resend email
+            <Mail className="h-4 w-4" /> {t("Resend email")}
           </button>
         </div>
       </div>

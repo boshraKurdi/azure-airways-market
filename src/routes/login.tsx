@@ -3,11 +3,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AuthLayout } from "@/components/auth-layout";
 import { Field, inputClass } from "@/components/ui-kit";
-import { login, setAuthToken } from "@/lib/api/auth";
+import { login, setAuthToken, setAuthUser } from "@/lib/api/auth";
 import { validateLoginForm } from "@/lib/validation";
 import { useAuth } from "@/lib/auth-context";
 import type { ValidationErrors } from "@/lib/validation";
 import { ApiError } from "@/lib/api/client";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const { setUser } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -60,11 +62,12 @@ function LoginPage() {
 
       // Store the JWT token
       setAuthToken(response.token);
+      setAuthUser(response.user);
 
       // Set user in auth context
       setUser(response.user);
 
-      toast.success("Login successful");
+      toast.success(t("Login successful"));
 
       // Redirect based on role
       if (response.user.role === "ADMIN") {
@@ -75,17 +78,17 @@ function LoginPage() {
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.status === 401) {
-          toast.error("Invalid email or password");
-          setErrors({ email: "Invalid credentials", password: "Invalid credentials" });
+          toast.error(t("Invalid email or password"));
+          setErrors({ email: t("Invalid credentials"), password: t("Invalid credentials") });
         } else if (error.status === 400) {
-          toast.error("Validation failed. Please check your input.");
+          toast.error(t("Validation failed. Please check your input."));
         } else if (error.status === 500) {
-          toast.error("Something went wrong. Please try again.");
+          toast.error(t("Something went wrong. Please try again."));
         } else {
-          toast.error("An error occurred. Please try again.");
+          toast.error(t("An error occurred. Please try again."));
         }
       } else {
-        toast.error("An unexpected error occurred");
+        toast.error(t("An unexpected error occurred"));
       }
     } finally {
       setIsLoading(false);
@@ -94,20 +97,20 @@ function LoginPage() {
 
   return (
     <AuthLayout
-      title="Welcome back"
-      subtitle="Sign in to manage your bookings and fare alerts."
+      title={t("Welcome back")}
+      subtitle={t("Sign in to manage your bookings and fare alerts.")}
       footer={
         <>
-          New to Skyla?{" "}
+          {t("New to Skyla?")} {" "}
           <Link to="/signup" className="font-semibold text-accent hover:underline">
-            Create an account
+            {t("Create an account")}
           </Link>
         </>
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Field label="Email" className={errors.email ? "has-error" : ""}>
+          <Field label={t("Email")} className={errors.email ? "has-error" : ""}>
             <input
               type="email"
               name="email"
@@ -122,7 +125,7 @@ function LoginPage() {
         </div>
 
         <div>
-          <Field label="Password" className={errors.password ? "has-error" : ""}>
+          <Field label={t("Password")} className={errors.password ? "has-error" : ""}>
             <input
               type="password"
               name="password"
@@ -143,10 +146,10 @@ function LoginPage() {
               className="h-4 w-4 rounded border-input accent-accent"
               disabled={isLoading}
             />
-            Keep me signed in
+            {t("Keep me signed in")}
           </label>
           <Link to="/forgot-password" className="text-xs font-semibold text-accent hover:underline">
-            Forgot password?
+            {t("Forgot password?")}
           </Link>
         </div>
 
@@ -155,7 +158,7 @@ function LoginPage() {
           disabled={isLoading}
           className="flex w-full items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? "Signing in..." : "Sign in"}
+          {isLoading ? t("Signing in...") : t("Sign in")}
         </button>
       </form>
     </AuthLayout>

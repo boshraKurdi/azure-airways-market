@@ -7,6 +7,8 @@ import { SearchPanel } from "@/components/search-panel";
 import { ResultRow } from "@/components/flight-card";
 import { EmptyState, SkeletonCard, StatusBadge } from "@/components/ui-kit";
 import { searchFlights } from "@/lib/api/flights";
+import { formatPrice } from "@/lib/flight-data";
+import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/search")({
@@ -45,6 +47,7 @@ type Sort = "cheapest" | "fastest" | "earliest";
 
 function SearchPage() {
   const { from, to, depart, passengers } = Route.useSearch();
+  const { t } = useI18n();
   const [maxPrice, setMaxPrice] = useState(2000);
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
   const [stops, setStops] = useState<"any" | "0" | "1">("0");
@@ -119,9 +122,9 @@ function SearchPage() {
     <div className="space-y-7">
       <div>
         <div className="flex items-center justify-between">
-          <p className="eyebrow">Price range</p>
+          <p className="eyebrow">{t("Price range")}</p>
           <span className="tabular text-xs font-semibold text-accent">
-            up to {formatPrice(maxPrice)}
+            {t("up to")} {formatPrice(maxPrice)}
           </span>
         </div>
         <input
@@ -136,7 +139,7 @@ function SearchPage() {
       </div>
 
       <div>
-        <p className="eyebrow">Airlines</p>
+        <p className="eyebrow">{t("Airlines")}</p>
         <div className="mt-3 space-y-2.5">
           {airlineOptions.map((a) => (
             <label
@@ -156,7 +159,7 @@ function SearchPage() {
       </div>
 
       <div>
-        <p className="eyebrow">Stops</p>
+        <p className="eyebrow">{t("Stops")}</p>
         <div className="mt-3 grid grid-cols-3 gap-2">
           {(
             [
@@ -176,14 +179,14 @@ function SearchPage() {
                   : "border-hairline text-ink-soft hover:border-accent/40",
               )}
             >
-              {l}
+              {t(l)}
             </button>
           ))}
         </div>
       </div>
 
       <div>
-        <p className="eyebrow">Departure time</p>
+        <p className="eyebrow">{t("Departure time")}</p>
         <div className="mt-3 grid grid-cols-2 gap-2">
           {(
             [
@@ -204,16 +207,16 @@ function SearchPage() {
                   : "border-hairline text-ink-soft hover:border-accent/40",
               )}
             >
-              {l}
+              {t(l)}
             </button>
           ))}
         </div>
       </div>
 
       <div>
-        <p className="eyebrow">Arrival time</p>
+        <p className="eyebrow">{t("Arrival time")}</p>
         <p className="mt-3 text-xs text-muted-foreground">
-          Arrival filtering follows your departure window for these offers.
+          {t("Arrival filtering follows your departure window for these offers.")}
         </p>
       </div>
 
@@ -222,7 +225,7 @@ function SearchPage() {
         onClick={reset}
         className="w-full rounded-lg border border-hairline py-2.5 text-xs font-semibold text-ink-soft transition-colors hover:border-accent/40 hover:text-accent"
       >
-        Reset all filters
+        {t("Reset all filters")}
       </button>
     </div>
   );
@@ -239,11 +242,14 @@ function SearchPage() {
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:justify-between">
           <div className="min-w-0">
             <h1 className="truncate text-xl font-semibold text-ink sm:text-2xl">
-              {!from || !to || !depart ? "Search for flights" : isLoading ? "Loading offers..." : `${results.length} offers found`}
+              {!from || !to || !depart
+                ? t("Search for flights")
+                : isLoading
+                  ? t("Loading offers...")
+                  : `${results.length} ${t("offers found")}`}
             </h1>
             <p className="mt-1 text-xs text-muted-foreground">
-              {passengers} passenger{passengers > 1 ? "s" : ""} · prices per person, taxes shown at
-              checkout
+              {passengers} {t(passengers > 1 ? "passengers" : "passenger")} · {t("prices per person, taxes shown at checkout")}
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -264,7 +270,7 @@ function SearchPage() {
                     sort === k ? "bg-surface text-ink shadow-card" : "text-muted-foreground",
                   )}
                 >
-                  {l}
+                  {t(l)}
                 </button>
               ))}
             </div>
@@ -273,7 +279,7 @@ function SearchPage() {
               onClick={() => setFiltersOpen(true)}
               className="inline-flex items-center gap-2 rounded-lg border border-hairline bg-surface px-3.5 py-2.5 text-xs font-semibold text-ink lg:hidden"
             >
-              <SlidersHorizontal className="h-4 w-4" /> Filters
+              <SlidersHorizontal className="h-4 w-4" /> {t("Filters")}
             </button>
           </div>
         </div>
@@ -288,8 +294,8 @@ function SearchPage() {
           <div className="space-y-4">
             {!from || !to || !depart ? (
               <EmptyState
-                title="Search for flights"
-                description="Choose your departure airport, destination, and travel date to see live offers from the backend."
+                title={t("Search for flights")}
+                description={t("Choose your departure airport, destination, and travel date to see live offers from the backend.")}
               />
             ) : isLoading ? (
               <div className="space-y-4">
@@ -299,28 +305,28 @@ function SearchPage() {
               </div>
             ) : error ? (
               <EmptyState
-                title="Unable to load flights"
-                description="Please try again in a moment."
+                title={t("Unable to load flights")}
+                description={t("Please try again in a moment.")}
                 action={
                   <button
                     type="button"
                     onClick={() => void refetch()}
                     className="rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground"
                   >
-                    Try again
+                    {t("Try again")}
                   </button>
                 }
               />
             ) : results.length === 0 ? (
               <EmptyState
-                title="No flights found"
-                description="Try another destination, date, or adjust your filters."
+                title={t("No flights found")}
+                description={t("Try another destination, date, or adjust your filters.")}
               />
             ) : (
               <>
                 <div className="flex flex-wrap gap-2">
-                  <StatusBadge tone="accent">Fares verified live</StatusBadge>
-                  <StatusBadge>Sorted by {sort}</StatusBadge>
+                  <StatusBadge tone="accent">{t("Fares verified live")}</StatusBadge>
+                  <StatusBadge>{t("Sorted by")} {t(sort === "cheapest" ? "Cheapest" : sort === "fastest" ? "Fastest" : "Earliest")}</StatusBadge>
                 </div>
                 {results.map((f) => (
                   <ResultRow key={f.id} flight={f} />
@@ -340,7 +346,7 @@ function SearchPage() {
           />
           <div className="animate-rise absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-hairline bg-surface p-6">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-ink">Filters</h2>
+              <h2 className="text-base font-semibold text-ink">{t("Filters")}</h2>
               <button onClick={() => setFiltersOpen(false)} aria-label="Close">
                 <X className="h-5 w-5 text-muted-foreground" />
               </button>
@@ -350,7 +356,7 @@ function SearchPage() {
               onClick={() => setFiltersOpen(false)}
               className="mt-6 w-full rounded-lg bg-accent py-3 text-sm font-semibold text-accent-foreground"
             >
-              Show {results.length} offers
+              {t("Show")} {results.length} {t("offers")}
             </button>
           </div>
         </div>

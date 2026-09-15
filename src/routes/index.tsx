@@ -6,6 +6,7 @@ import { SearchPanel } from "@/components/search-panel";
 import { OfferCard } from "@/components/flight-card";
 import { SectionHeading, StatusBadge } from "@/components/ui-kit";
 import { getFlights } from "@/lib/api/flights";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -52,6 +53,7 @@ const formatPrice = (value: number) =>
   }).format(value);
 
 function Home() {
+  const { t } = useI18n();
   const { data: flights = [] } = useQuery({
     queryKey: ["home-flights"],
     queryFn: () => getFlights({ page: 1, limit: 12 }),
@@ -67,16 +69,15 @@ function Home() {
           <div className="animate-rise max-w-3xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-foreground/85">
               <Sparkles className="h-3.5 w-3.5" />
-              Live offers from the backend
+              {t("Live offers from the backend")}
             </span>
             <h1 className="mt-6 text-4xl font-semibold leading-[1.05] text-primary-foreground sm:text-6xl">
-              Find your next flight
+              {t("Find your next flight")}
               <br />
-              at a better price.
+              {t("at a better price.")}
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-primary-foreground/70">
-              A curated marketplace of hand-checked flight offers. Compare real fares, see the full
-              price up front, and book in under three minutes.
+              {t("A curated marketplace of hand-checked flight offers. Compare real fares, see the full price up front, and book in under three minutes.")}
             </p>
           </div>
         </div>
@@ -104,16 +105,16 @@ function Home() {
 
       <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-24">
         <SectionHeading
-          eyebrow="Cheapest flights"
-          title="Live offers, lowest fare first"
-          description="Curated by our team and re-verified every few minutes. Prices shown per passenger, taxes included at checkout."
+          eyebrow={t("Cheapest flights")}
+          title={t("Live offers, lowest fare first")}
+          description={t("Curated by our team and re-verified every few minutes. Prices shown per passenger, taxes included at checkout.")}
           action={
             <Link
               to="/search"
               search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
               className="hidden shrink-0 items-center gap-1.5 rounded-lg border border-hairline bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-accent/40 hover:text-accent sm:inline-flex"
             >
-              All offers <ArrowRight className="h-4 w-4" />
+              {t("All offers")} <ArrowRight className="h-4 w-4" />
             </Link>
           }
         />
@@ -127,17 +128,18 @@ function Home() {
       <section className="border-y border-hairline bg-surface">
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[1fr_1.2fr] lg:gap-20">
           <div>
-            <p className="eyebrow">Why Skyla</p>
+            <p className="eyebrow">{t("Why Skyla")}</p>
             <h2 className="mt-2.5 text-2xl font-semibold text-ink sm:text-3xl">
-              Marketplace pricing, without the guesswork.
+              {t("Marketplace pricing, without the guesswork.")}
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              We are not an airline. Skyla is the layer between you and dozens of carriers — every
-              offer is published, priced and monitored by our operations team.
+              {t(
+                "We are not an airline. Skyla is the layer between you and dozens of carriers — every offer is published, priced and monitored by our operations team.",
+              )}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <StatusBadge tone="success">98.4% on-time fare match</StatusBadge>
-              <StatusBadge tone="accent">24h free cancellation</StatusBadge>
+              <StatusBadge tone="success">{t("98.4% on-time fare match")}</StatusBadge>
+              <StatusBadge tone="accent">{t("24h free cancellation")}</StatusBadge>
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
@@ -147,8 +149,8 @@ function Home() {
                 className="rounded-xl border border-hairline bg-background p-5 transition-colors hover:border-accent/35"
               >
                 <p.icon className="h-5 w-5 text-accent" strokeWidth={2} />
-                <h3 className="mt-4 text-sm font-semibold text-ink">{p.title}</h3>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{p.body}</p>
+                <h3 className="mt-4 text-sm font-semibold text-ink">{t(p.title)}</h3>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{t(p.body)}</p>
               </div>
             ))}
           </div>
@@ -158,25 +160,26 @@ function Home() {
       <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
         <div className="hero-canvas relative overflow-hidden rounded-2xl px-6 py-14 text-center sm:px-16">
           <h2 className="text-2xl font-semibold text-primary-foreground sm:text-4xl">
-            Ready when the fare drops?
+            {t("Ready when the fare drops?")}
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-primary-foreground/70">
-            Create a free account to save routes, track fare movements and keep every booking in one
-            place.
+            {t(
+              "Create a free account to save routes, track fare movements and keep every booking in one place.",
+            )}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               to="/signup"
               className="rounded-lg bg-primary-foreground px-5 py-3 text-sm font-semibold text-primary transition-all hover:opacity-90"
             >
-              Create account
+              {t("Create account")}
             </Link>
             <Link
               to="/search"
               search={{ from: "", to: "", depart: "", passengers: 1, cabin: "Economy" }}
               className="rounded-lg border border-primary-foreground/25 px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/10"
             >
-              Browse offers
+              {t("Browse offers")}
             </Link>
           </div>
         </div>

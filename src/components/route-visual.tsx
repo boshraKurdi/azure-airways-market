@@ -1,5 +1,6 @@
 import { Plane } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 
 export function RouteVisual({
   from,
@@ -16,6 +17,7 @@ export function RouteVisual({
   size?: "sm" | "md" | "lg";
   className?: string;
 }) {
+  const { t } = useI18n();
   const codeSize = size === "lg" ? "text-4xl sm:text-5xl" : size === "md" ? "text-2xl" : "text-lg";
 
   return (
@@ -39,7 +41,7 @@ export function RouteVisual({
         </div>
         {typeof stops === "number" && (
           <span className="mt-1 text-[11px] font-medium text-muted-foreground">
-            {stops === 0 ? "Direct" : `${stops} stop`}
+            {stops === 0 ? t("Direct") : `${stops} ${t(stops === 1 ? "stop" : "stops")}`}
           </span>
         )}
       </div>

@@ -4,6 +4,7 @@ import { Globe, Menu, Plane, UserRound, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
 
 const links = [
   { to: "/search", label: "Flights" },
@@ -14,6 +15,7 @@ const links = [
 export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { locale, t, toggleLocale } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -28,7 +30,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
 
   const handleLogout = () => {
     logout();
-    toast.success("Logged out successfully");
+    toast.success(t("Logged out successfully"));
     navigate({ to: "/" });
   };
 
@@ -78,7 +80,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
                 className: solid ? "text-ink bg-surface-muted" : "text-primary-foreground",
               }}
             >
-              {l.label}
+              {t(l.label)}
             </Link>
           ))}
         </nav>
@@ -86,6 +88,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
         <div className="flex items-center justify-end gap-2">
           <button
             type="button"
+            onClick={toggleLocale}
             className={cn(
               "hidden items-center gap-1.5 rounded-md px-2.5 py-2 text-xs font-semibold transition-colors sm:flex",
               solid
@@ -94,7 +97,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
             )}
           >
             <Globe className="h-4 w-4" />
-            EN
+            {locale === "en" ? "عربي" : "EN"}
           </button>
 
           {user ? (
@@ -119,7 +122,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
                 )}
               >
                 <LogOut className="h-4 w-4" />
-                Logout
+                {t("Logout")}
               </button>
             </div>
           ) : (
@@ -133,7 +136,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
               )}
             >
               <UserRound className="h-4 w-4" />
-              Login
+              {t("Login")}
             </Link>
           )}
           <button
@@ -162,7 +165,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
                 onClick={() => setOpen(false)}
                 className="rounded-md px-2 py-3 text-sm font-semibold text-ink hover:bg-surface-muted"
               >
-                {l.label}
+                {t(l.label)}
               </Link>
             ))}
             {user ? (
@@ -178,7 +181,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
                   className="flex items-center gap-2 rounded-md px-2 py-3 text-sm font-semibold text-destructive hover:bg-destructive/10"
                 >
                   <LogOut className="h-4 w-4" />
-                  Logout
+                  {t("Logout")}
                 </button>
               </>
             ) : (
@@ -187,7 +190,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
                 onClick={() => setOpen(false)}
                 className="rounded-md px-2 py-3 text-sm font-semibold text-ink hover:bg-surface-muted"
               >
-                Login
+                {t("Login")}
               </Link>
             )}
           </div>

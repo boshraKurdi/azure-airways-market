@@ -24,7 +24,7 @@ export async function apiRequest<T>(
   };
 
   // Add JWT token if it exists in localStorage
-  const token = localStorage.getItem("authToken");
+  const token = typeof window === "undefined" ? null : localStorage.getItem("authToken");
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
@@ -45,7 +45,11 @@ export async function apiRequest<T>(
   }
 
   if (!response.ok) {
-    throw new ApiError(response.status, response.statusText, data);
+    const message =
+      typeof data === "object" && data !== null && "message" in data && typeof data.message === "string"
+        ? data.message
+        : response.statusText || "Request failed";
+    throw new ApiError(response.status, message, data);
   }
 
   return data as T;

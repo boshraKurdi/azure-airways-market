@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { User } from "./types/auth";
-import { getCurrentUser, getAuthToken, clearAuthToken } from "./api/auth";
-import { ApiError } from "./api/client";
+import { getAuthToken, getAuthUser, clearAuthToken } from "./api/auth";
 
 export interface AuthContextType {
   user: User | null;
@@ -34,14 +33,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const response = await getCurrentUser();
-      setUser(response.user);
+      setUser(getAuthUser());
     } catch (error) {
-      // If token is invalid or expired, clear it
-      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
-        clearAuthToken();
-        setUser(null);
-      }
+      clearAuthToken();
+      setUser(null);
     } finally {
       setIsLoading(false);
     }

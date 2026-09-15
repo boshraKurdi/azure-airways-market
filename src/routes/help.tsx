@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { LifeBuoy, MessageSquare, Plane, Wallet } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { SectionHeading } from "@/components/ui-kit";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/help")({
   head: () => ({
@@ -60,24 +61,28 @@ const faqs = [
 ];
 
 function HelpPage() {
+  const { t } = useI18n();
+
   return (
     <PageShell>
       <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8">
         <SectionHeading
-          eyebrow="Help center"
-          title="How can we help?"
-          description="Most answers are here. If not, our team replies within a few minutes during working hours."
+          eyebrow={t("Help center")}
+          title={t("How can we help?")}
+          description={t(
+            "Most answers are here. If not, our team replies within a few minutes during working hours.",
+          )}
         />
 
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
-          {topics.map((t) => (
+          {topics.map((topic) => (
             <div
-              key={t.title}
+              key={topic.title}
               className="rounded-xl border border-hairline bg-surface p-5 transition-colors hover:border-accent/35"
             >
-              <t.icon className="h-5 w-5 text-accent" />
-              <h3 className="mt-4 text-sm font-semibold text-ink">{t.title}</h3>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{t.body}</p>
+              <topic.icon className="h-5 w-5 text-accent" />
+              <h3 className="mt-4 text-sm font-semibold text-ink">{t(topic.title)}</h3>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{t(topic.body)}</p>
             </div>
           ))}
         </div>
@@ -86,9 +91,9 @@ function HelpPage() {
           {faqs.map(([q, a]) => (
             <details key={q} className="group p-6">
               <summary className="cursor-pointer list-none text-sm font-semibold text-ink">
-                {q}
+                {t(q)}
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{a}</p>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t(a)}</p>
             </details>
           ))}
         </div>
@@ -97,15 +102,15 @@ function HelpPage() {
           <div className="flex items-start gap-3">
             <MessageSquare className="mt-0.5 h-5 w-5 text-accent" />
             <div>
-              <p className="text-sm font-semibold text-ink">Still need help?</p>
-              <p className="mt-1 text-xs text-muted-foreground">Average reply time: 4 minutes.</p>
+              <p className="text-sm font-semibold text-ink">{t("Still need help?")}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("Average reply time: 4 minutes.")}</p>
             </div>
           </div>
           <Link
             to="/bookings"
             className="rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground"
           >
-            Contact support
+            {t("Contact support")}
           </Link>
         </div>
       </div>

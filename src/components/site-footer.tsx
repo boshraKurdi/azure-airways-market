@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Plane } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 const groups = [
   {
@@ -17,6 +18,7 @@ const groups = [
 ];
 
 export function SiteFooter() {
+  const { t } = useI18n();
   return (
     <footer className="border-t border-hairline bg-surface">
       <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
@@ -29,18 +31,17 @@ export function SiteFooter() {
               <span className="text-display text-lg font-semibold text-ink">Skyla</span>
             </div>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              A curated flight marketplace. Verified offers, transparent pricing, and a booking flow
-              that respects your time.
+              {t("A curated flight marketplace. Verified offers, transparent pricing, and a booking flow that respects your time.")}
             </p>
           </div>
           {groups.map((g) => (
             <div key={g.title}>
-              <p className="eyebrow">{g.title}</p>
+              <p className="eyebrow">{t(g.title)}</p>
               <ul className="mt-4 space-y-2.5">
                 {g.items.map((i) => (
                   <li key={i}>
                     <span className="cursor-pointer text-sm text-ink-soft transition-colors hover:text-accent">
-                      {i}
+                      {t(i)}
                     </span>
                   </li>
                 ))}
@@ -52,13 +53,13 @@ export function SiteFooter() {
           <p>© {new Date().getFullYear()} Skyla Travel Technologies. All rights reserved.</p>
           <div className="flex flex-wrap gap-5">
             <Link to="/help" className="hover:text-ink">
-              Terms
+              {t("Terms")}
             </Link>
             <Link to="/help" className="hover:text-ink">
-              Privacy
+              {t("Privacy")}
             </Link>
             <Link to="/help" className="hover:text-ink">
-              Cookies
+              {t("Cookies")}
             </Link>
           </div>
         </div>
