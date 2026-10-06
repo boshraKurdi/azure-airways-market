@@ -3,10 +3,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { AuthLayout } from "@/components/auth-layout";
 import { Field, inputClass } from "@/components/ui-kit";
-import { register } from "@/lib/api/auth";
+import { login, register, setAuthToken, setAuthUser } from "@/lib/api/auth";
 import { validateRegisterForm } from "@/lib/validation";
 import { useAuth } from "@/lib/auth-context";
-import { setAuthToken } from "@/lib/api/auth";
 import type { ValidationErrors } from "@/lib/validation";
 import { ApiError } from "@/lib/api/client";
 import { useI18n } from "@/lib/i18n";
@@ -34,7 +33,12 @@ function SignupPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
   const { setUser } = useAuth();
-  const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", password: "" });
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -56,7 +60,7 @@ function SignupPage() {
 
     // Validate form
     const newErrors = validateRegisterForm(fullName, formData.email, formData.password);
-    
+
     if (!agreedToTerms) {
       toast.error(t("Please agree to the terms of service and privacy policy"));
       return;
@@ -68,33 +72,54 @@ function SignupPage() {
     }
 
     setIsLoading(true);
+    let accountCreated = false;
     try {
-      const response = await register({
+      await register({
         name: fullName,
         email: formData.email,
         password: formData.password,
       });
+      accountCreated = true;
 
-      setUser(response.user);
+      const session = await login({
+        email: formData.email,
+        password: formData.password,
+      });
+      setAuthToken(session.token);
+      setAuthUser(session.user);
+      setUser(session.user);
       toast.success(t("Account created successfully"));
-      
-      // Redirect to login page
-      navigate({ to: "/login" });
+      navigate({ to: "/", replace: true });
     } catch (error) {
+      if (accountCreated) {
+        toast.error(t("Your account was created, but automatic sign-in failed. Please sign in."));
+        navigate({ to: "/login", replace: true });
+        return;
+      }
+
       if (error instanceof ApiError) {
         if (error.status === 409) {
           setErrors({ email: t("Email is already registered") });
           toast.error(t("Email is already registered"));
         } else if (error.status === 400) {
-          // Backend validation errors
-          const data = error.data as any;
-          if (data?.errors && Array.isArray(data.errors)) {
+          const data = error.data;
+          if (
+            typeof data === "object" &&
+            data !== null &&
+            "errors" in data &&
+            Array.isArray(data.errors)
+          ) {
             const fieldErrors: ValidationErrors = {};
-            data.errors.forEach((err: any) => {
-              if (err.field) {
-                fieldErrors[err.field as keyof ValidationErrors] = err.message;
+            for (const issue of data.errors) {
+              if (typeof issue !== "object" || issue === null) continue;
+              if (!("field" in issue) || !("message" in issue)) continue;
+              if (typeof issue.field !== "string" || typeof issue.message !== "string") {
+                continue;
               }
-            });
+              if (issue.field === "name" || issue.field === "email" || issue.field === "password") {
+                fieldErrors[issue.field] = issue.message;
+              }
+            }
             if (Object.keys(fieldErrors).length > 0) {
               setErrors(fieldErrors);
             }
@@ -119,7 +144,7 @@ function SignupPage() {
       subtitle={t("Free forever. No card required to browse or track fares.")}
       footer={
         <>
-          {t("Already have an account?")} {" "}
+          {t("Already have an account?")}{" "}
           <Link to="/login" className="font-semibold text-accent hover:underline">
             {t("Sign in")}
           </Link>
@@ -172,7 +197,11 @@ function SignupPage() {
         </div>
 
         <div>
-          <Field label={t("Password")} hint={t("At least 8 characters.")} className={errors.password ? "has-error" : ""}>
+          <Field
+            label={t("Password")}
+            hint={t("At least 8 characters.")}
+            className={errors.password ? "has-error" : ""}
+          >
             <input
               type="password"
               name="password"
@@ -182,7 +211,9 @@ function SignupPage() {
               placeholder="••••••••"
               disabled={isLoading}
             />
-            {errors.password && <p className="mt-1.5 text-xs text-destructive">{errors.password}</p>}
+            {errors.password && (
+              <p className="mt-1.5 text-xs text-destructive">{errors.password}</p>
+            )}
           </Field>
         </div>
 
