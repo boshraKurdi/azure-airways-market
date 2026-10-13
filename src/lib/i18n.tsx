@@ -92,6 +92,8 @@ const translations: Record<Locale, Dictionary> = {
     "Already have an account?": "لديك حساب بالفعل؟",
     "First name": "الاسم الأول",
     "Last name": "اسم العائلة",
+    "Enter first name": "أدخل الاسم الأول",
+    "Enter last name": "أدخل اسم العائلة",
     "At least 8 characters.": "8 أحرف على الأقل.",
     "I agree to the Atyketo terms of service and privacy policy.": "أوافق على شروط خدمة Atyketo وسياسة الخصوصية.",
     "Creating account...": "جار إنشاء الحساب...",

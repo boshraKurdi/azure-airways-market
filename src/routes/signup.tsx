@@ -161,7 +161,7 @@ function SignupPage() {
                 value={formData.firstName}
                 onChange={handleChange}
                 className={inputClass}
-                placeholder="Boshra"
+                placeholder={t("Enter first name")}
                 disabled={isLoading}
               />
             </Field>
@@ -174,7 +174,7 @@ function SignupPage() {
                 value={formData.lastName}
                 onChange={handleChange}
                 className={inputClass}
-                placeholder="Kurdi"
+                placeholder={t("Enter last name")}
                 disabled={isLoading}
               />
             </Field>
